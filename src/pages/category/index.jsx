@@ -3,7 +3,7 @@ import { MdOutlineModeEditOutline } from "react-icons/md";
 import React, { useEffect, useState } from 'react'
 import { GlobalTable, CategoryModal } from '@components'
 import { category } from '@service'
-import { Button, Space } from 'antd'
+import { Button, Input, Space } from 'antd'
 import ConfirmDelete from '../../confirmation/delete'
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -82,6 +82,14 @@ const Index = () => {
         current_params.set('limit', `${pageSize}`)
         navigate(`?${current_params}`)
     }
+    const handleChange = (event) => {
+        console.log(event.target.value);
+        setParams((prev) => ({
+            ...prev,
+            search: event.target.value
+        }))
+        // console.log(params);
+    }
 
     const columns = [
         {
@@ -113,9 +121,12 @@ const Index = () => {
 
     return (
         <div>
-            <Button onClick={openModal} className=' bg-blue-600 text-[#fff] font-[600]'>
-                <span className="ml-2">Add new category</span>
-            </Button>
+            <div style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <Input placeholder="Search Categories" size="large" style={{ maxWidth: 260, minWidth: 20 }} onChange={handleChange} />
+                <Button onClick={openModal} className=' bg-blue-600 text-[#fff] font-[600]'>
+                    <span className="ml-2">Add new category</span>
+                </Button>
+            </div>
             <CategoryModal
                 open={open}
                 handleClose={handleClose}

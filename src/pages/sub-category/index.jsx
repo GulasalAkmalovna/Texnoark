@@ -125,9 +125,12 @@ const Index = () => {
                 // update={update}
                 categories={categories}
             />
-            <Button type="primary" size="large" style={{ maxWidth: 160, minWidth: 20, backgroundColor: "blue" }} onClick={showModal}>
-                Create
-            </Button>
+            <div style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <Input placeholder="Search Categories" size="large" style={{ maxWidth: 260, minWidth: 20 }} />
+                <Button type="primary" size="large" style={{ maxWidth: 160, minWidth: 20, backgroundColor: "blue" }} onClick={showModal}>
+                    Create
+                </Button>
+            </div>
             {/* Sub category */}
             <GlobalTable
                 columns={columns}

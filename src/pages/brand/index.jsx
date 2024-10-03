@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { GlobalTable, BrandModal } from '@components'
 import { brand, category } from '@service'
-import { Button, Space } from 'antd'
+import { Button, Input, Space } from 'antd'
 import { MdOutlineModeEditOutline } from "react-icons/md";
 import ConfirmDelete from '../../confirmation/delete'
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -73,7 +73,7 @@ const Index = () => {
     }
     useEffect(() => {
         getCategories();
-    }, []);
+    }, [params]);
 
     const handleTableChange = (pagination) => {
         console.log(pagination)
@@ -88,12 +88,23 @@ const Index = () => {
         current_params.set('limit', `${pageSize}`)
         navigate(`?${current_params}`)
     }
+
     const deleteData = async (id) => {
         const res = await brand.delete(id);
         if (res.status === 200) {
             getData();
         }
     };
+    const handleSearch = (event) => {
+        setParams((prev) => ({
+            ...prev,
+            search: event.target.value,
+        }));
+        const search_params = new URLSearchParams(search);
+        search_params.set("search", event.target.value);
+        navigate(`?${search_params}`);
+    };
+
 
     const columns = [
         {
@@ -125,9 +136,12 @@ const Index = () => {
 
     return (
         <div>
-            <Button onClick={showModal} className=' bg-blue-600 text-[#fff] font-[600]'>
-                <span className="ml-2">Add new Brand</span>
-            </Button>
+            <div style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <Input placeholder="Search Categories" size="large" style={{ maxWidth: 260, minWidth: 20 }} onChange={handleSearch} />
+                <Button onClick={showModal} className=' bg-blue-600 text-[#fff] font-[600]'>
+                    <span className="ml-2">Add new Brand</span>
+                </Button>
+            </div>
             <BrandModal
                 visible={isModalOpen}
                 onOk={handleOk}

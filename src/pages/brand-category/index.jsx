@@ -2,7 +2,7 @@ import { AiFillEdit } from "react-icons/ai";
 import React, { useEffect, useState } from 'react'
 import { GlobalTable, BrandCategoryModal } from '@components'
 import { brandCategory, brand } from '@service'
-import { Button, Space } from 'antd'
+import { Button, Input, Space } from 'antd'
 import ConfirmDelete from '../../confirmation/delete'
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -135,9 +135,12 @@ const Index = () => {
                 // update={update}
                 parentBrands={parentBrands}
             />
-            <Button type="primary" size="large" style={{ maxWidth: 160, minWidth: 20, backgroundColor: "blue" }} onClick={showModal}>
-                Add Brand-category
-            </Button>
+            <div style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <Input placeholder="Search Categories" size="large" style={{ maxWidth: 260, minWidth: 20 }} />
+                <Button type="primary" size="large" style={{ maxWidth: 160, minWidth: 20, backgroundColor: "blue" }} onClick={showModal}>
+                    Add Brand-category
+                </Button>
+            </div>
 
             <GlobalTable
                 columns={columns}
