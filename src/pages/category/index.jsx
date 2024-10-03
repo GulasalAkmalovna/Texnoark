@@ -9,18 +9,27 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const Index = () => {
     const [data, setData] = useState([])
+    const [total, setTotal] = useState()
+    const [params, setParams] = useState({
+        search: "",
+        limit: 3,
+        page: 1
+    })
     const [open, setOpen] = useState(false);
     const navigate = useNavigate()
+    const { search } = useLocation()
+
 
     const openModal = () => {
         setOpen(true);
     };
     const getData = async () => {
         try {
-            const res = await category.get()
+            const res = await category.get(params)
             // console.log(res)
             if (res.status === 200) {
                 setData(res?.data?.data?.categories);
+                setTotal(res?.data?.data?.count)
             }
         } catch (error) {
             console.log(error)
@@ -29,7 +38,20 @@ const Index = () => {
 
     useEffect(() => {
         getData()
-    }, [])
+    }, [params])
+
+    useEffect(() => {
+        const params = new URLSearchParams(search)
+        let page = Number(params.get("page")) || 1
+        let limit = Number(params.get("limit")) || 3
+        setParams((prev) => ({
+            ...prev,
+            page: page,
+            limit: limit
+        }))
+
+        // let limit
+    }, [search])
 
     const deleteData = async (id) => {
         const res = await category.delete(id);
@@ -47,11 +69,28 @@ const Index = () => {
         setOpen(false);
     };
 
+    const handleTableChange = (pagination) => {
+        console.log(pagination)
+        const { current, pageSize } = pagination
+        setParams((prev) => ({
+            ...prev,
+            limit: pageSize,
+            page: current,
+        }))
+        const current_params = new URLSearchParams(search)
+        current_params.set('page', `${current}`)
+        current_params.set('limit', `${pageSize}`)
+        navigate(`?${current_params}`)
+    }
 
     const columns = [
         {
             title: 'Name',
             dataIndex: 'name',
+        },
+        {
+            title: 'Created',
+            dataIndex: 'createdAt',
         },
         {
             title: 'Action',
@@ -82,7 +121,18 @@ const Index = () => {
                 handleClose={handleClose}
                 getData={getData}
             />
-            <GlobalTable columns={columns} data={data} />
+            <GlobalTable
+                columns={columns}
+                data={data}
+                pagination={{
+                    current: params.page,
+                    pageSize: params.limit,
+                    total: total,
+                    showSizeChanger: true,
+                    pageSizeOptions: ['2', '4', '6', '8', '10', '12'],
+                }}
+                handleChange={handleTableChange}
+            />
         </div>
     )
 }

@@ -11,6 +11,12 @@ import { useNavigate, NavLink, useParams, useLocation } from 'react-router-dom'
 
 const Index = () => {
     const [data, setData] = useState([])
+    const [total, setTotal] = useState()
+    const [params, setParams] = useState({
+        search: "",
+        limit: 3,
+        page: 1
+    })
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [categories, setCategories] = useState([]);
     const { id } = useParams();
@@ -21,6 +27,7 @@ const Index = () => {
         try {
             if (res.status === 200) {
                 setData(res?.data?.data?.subcategories);
+                setTotal(res?.data?.data?.count)
                 // console.log(res.data.data.subcategories)
             }
         } catch (error) {
@@ -31,7 +38,7 @@ const Index = () => {
 
     useEffect(() => {
         getData();
-    }, []);
+    }, [params]);
 
     const editData = () => {
         console.log("for update")
@@ -52,6 +59,16 @@ const Index = () => {
     const handleClose = () => {
         setIsModalOpen(false);
     };
+
+    const handleTableChange = (pagination) => {
+        console.log(pagination)
+        const { current, pageSize } = pagination
+        setParams((prev) => ({
+            ...prev,
+            limit: pageSize,
+            page: current,
+        }))
+    }
 
     const getCategories = async () => {
         try {
@@ -96,22 +113,6 @@ const Index = () => {
                 </Space>
             ),
         },
-        // {
-        //     title: 'Action',
-        //     key: 'action',
-        //     render: (_, record) => (
-        //         <Space size="middle">
-        //             <Button style={{ backgroundColor: 'orange', color: "#fff" }}><MdOutlineModeEditOutline /></Button>
-        //             <ConfirmDelete
-        //                 id={record.id}
-        //                 onConfirm={deleteData}
-        //                 onCancel={() => console.log('Cancelled')}
-        //                 title={"Delete this Brands ?"}
-        //             />
-        //             <Button onClick={() => subCategoryView(record.id.toString())} style={{ backgroundColor: "dodgerblue", color: "#fff" }}><AiOutlineArrowRight /></Button>
-        //         </Space>
-        //     ),
-        // },
     ];
 
     return (
@@ -128,7 +129,18 @@ const Index = () => {
                 Create
             </Button>
             {/* Sub category */}
-            <GlobalTable columns={columns} data={data} />
+            <GlobalTable
+                columns={columns}
+                data={data}
+                pagination={{
+                    current: params.page,
+                    pageSize: params.limit,
+                    total: total,
+                    showSizeChanger: true,
+                    pageSizeOptions: ['2', '4', '6', '8', '10', '12'],
+                }}
+                handleChange={handleTableChange}
+            />
             <NavLink to="/admin-layout/category" className=" font-[700], text-[#b42d43]" style={{ fontSize: "18px" }}>Back to Category</NavLink>
         </div>
     )
