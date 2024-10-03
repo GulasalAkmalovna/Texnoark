@@ -5,9 +5,16 @@ import ConfirmDelete from '../../confirmation/delete'
 import { MdOutlineModeEditOutline } from "react-icons/md";
 import { Button, Space } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { ProductModal } from '@components'
+import { brandCategory, brand, category } from '@service';
 
 const Index = () => {
     const [data, setData] = useState([])
+    const [brands, setBrands] = useState([])
+    const [update, setUpdate] = useState({});
+    const [categories, setCategories] = useState([]);
+    const [brandCategories, setBrandCategories] = useState([]);
+    const [open, setOpen] = useState(false);
     const [total, setTotal] = useState()
     const [params, setParams] = useState({
         search: "",
@@ -16,6 +23,14 @@ const Index = () => {
     })
     const navigate = useNavigate()
     const { search } = useLocation()
+
+    const openModal = () => {
+        setOpen(true);
+    };
+    const onClose = () => {
+        setOpen(false);
+    };
+
 
     const getData = async () => {
         try {
@@ -33,6 +48,56 @@ const Index = () => {
     useEffect(() => {
         getData()
     }, [params])
+
+    const getBrands = async () => {
+        try {
+            const res = await brand.get(params);
+            console.log(res, 'res branddlar')
+            // const fetchedData = res?.data?.data?.brands;
+            setBrands(res?.data?.data?.brands);
+            console.log(brands, 'brandlar');
+
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        getBrands();
+    }, [params]);
+
+    const getCategories = async () => {
+        try {
+            const res = await category.get(params);
+            // const fetchedData = res?.data?.data?.categories;
+            setCategories(res?.data?.data?.categories);
+            console.log(categories, 'categoriyalar')
+            // console.log(categories, "categories");
+
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        getCategories();
+    }, [params]);
+
+    const getBrandCategories = async () => {
+        try {
+            const res = await brandCategory.get(params);
+            // const fetchedData = res?.data?.data?.brandCategories;
+            setBrandCategories(res?.data?.data?.brandCategories);
+            // console.log(brandCategory);
+
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        getBrandCategories();
+    }, [params]);
 
     useEffect(() => {
         const params = new URLSearchParams(search)
@@ -67,6 +132,7 @@ const Index = () => {
         navigate(`?${current_params}`)
     }
 
+
     const columns = [
         {
             title: 'Name',
@@ -93,6 +159,18 @@ const Index = () => {
 
     return (
         <div>
+            <ProductModal
+                open={open}
+                onClose={onClose}
+                getData={getData}
+                brands={brands}
+                update={update}
+                categories={categories}
+                brandCategories={brandCategories}
+            />
+            <Button type='primary' onClick={openModal}>
+                <span >Add New Product</span>
+            </Button>
             products
             <GlobalTable
                 columns={columns}
